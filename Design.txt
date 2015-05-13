@@ -1,0 +1,82 @@
+Description:
+	This document specifies the high level architecture and algorithmic nature 
+	of a search engine written in python.
+
+Components:
+	1. Parser
+	2. Indexer
+	5. Scorer	(not required yet for milestone #1)
+	6. Interface (not required yet for milestone #1)
+
+Parser(corpus_path)
+	Description
+		This component parses the corpus into a list of (term:field, docId:frequency) pairs.
+		If memory fills in the process, this intermediate list is sent to the Indexer.
+		This is repeated until the entire corpus is parsed and indexed.
+		Finally, the parser merges all these intermediate indexes into a final postings file.
+
+	Input 
+		The path to a corpus.
+	Output
+		A postings file for the corpus.
+
+	Psuedocode
+		let token_list = [new empty list]
+		let block_list = [new empty list]
+		let postings_file = NewOutputFile("postings_file.txt")
+
+		For each document d in the corpus_path
+			While (free memory available)
+				do 	title_list = tokenize(d.title, "title", d.id)
+						For each term t in the title_list
+						do 	token_list.add(t)
+						text_list = tokenize(d.text, "text", d.id)
+						For each term t in text_list
+						do  token_list.add(t)
+			block_list.add(Indexer(token_list, block#))
+		MergeBlocks(block_list, postings_file)
+		Remove all files in block_list from disk
+		end
+
+Indexer(token_list)
+	Description
+		This component takes a list of pairs and builds a term dictionary of (term, field) pairs, 
+		and an intermediate postings file of (docID, frequency) pairs for that list.
+
+	Input
+		A list of (term, field, docId:frequency) pairs.
+	Output
+		Output_file associated with intermediate block.
+
+	Psuedocode
+		let out_file = NewOutputFile(str(block#)+".txt")
+		let dictionary = {new hash}
+
+		While (free memory available)
+		do 	For each token t in token token_list
+				do 	if pair(term(t), field(t)) not in dictionary
+						then	postings_list = AddToDictionary(dictionary, pair)
+						else 	postings_list = GetPostingsList(dictionary, pair)
+						if full(postings_list)
+						then	postings_list = DoublePostingsList(dictionary, pair)
+						AddToPostingsList(dictionary, pair(docID(t),frequency(t)))
+		sorted_dictionary = Sort(dictionary)
+		WriteBlockToDisk(sorted_dictionary, dictionary, out_file)
+		return out_file
+
+// Under Construction
+Scorer(query)
+	let scores[N] = 0
+	let length[N] = 0
+
+	For each query term t
+	do 	weight = CalculateWeightedTermFrequency(t)
+			postings_list = GetPostingsList(t)
+			For each pair(docID,Termfrequency) in postings_list
+			do 	scores[docID] = scores[docID] + 
+
+
+
+
+
+
