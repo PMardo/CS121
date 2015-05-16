@@ -1,2 +1,2 @@
-FileDump contains all the documents to be indexed formatted in JSON 
-Design.txt will contain a high level description of indexer.py
+FileDump contains all the documents to be indexed, each file formatted in JSON
+Design.txt contains the high level pseudocode for indexer.py

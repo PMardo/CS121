@@ -1,68 +1,121 @@
 Description:
-	This document specifies the high level architecture and algorithmic nature 
-	of a search engine written in python.
+	This document specifies the high level algorithmic nature 
+	of a parametric vector space search engine written in python, which 
+	assumes that the corpus to be searched can fit in 4GB of main memory.
 
 Components:
 	1. Parser
 	2. Indexer
-	5. Scorer	(not required yet for milestone #1)
-	6. Interface (not required yet for milestone #1)
+	3. Reporter
+	4. Scorer	(not required yet for milestone #1)
+	5. Interface (not required yet for milestone #1)
 
-Parser(corpus_path)
+Parser
 	Description
-		This component parses the corpus into a list of (term:field, docId:frequency) pairs.
-		If memory fills in the process, this intermediate list is sent to the Indexer.
-		This is repeated until the entire corpus is parsed and indexed.
-		Finally, the parser merges all these intermediate indexes into a final postings file.
+		This component parses and tokenizes the corpus into a list of "term.field docId.frequency" tokens, 
+		where stop words are discarded. Once the entire corpus has been tokenized, this list is returned 
+		to the caller. The number of documents and the number of unique words found in the corpus are also 
+		returned to the caller.
 
 	Input 
 		The path to a corpus.
 	Output
-		A postings file for the corpus.
+		A list of "term.field docId.frequency" tokens.
+
+	Subcomponents
+	1. Tokenizer(text, field, docID)
+				Takes a string of text, a field name ("title" or text"), and a document ID, and returns a list of 
+				"term.field docId.frequency" tokens for each term in the text. This subcomponent must also
+				exclude stop words, and any repetition of terms must simply increment the frequency counter.
+				Note: We should use the NLTK library to do all this.
+	2. FindUnique(token_list)
+				This subcomponent should return the number of unique terms in the entire corpus.
+			  token_list at this point should be excluding stop words via Tokenizer.
+				Note: There should be something in NLTK for this.
 
 	Psuedocode
+		let title_field_list = [new empty list]
+		let text_field_list = [new empty list]
 		let token_list = [new empty list]
-		let block_list = [new empty list]
-		let postings_file = NewOutputFile("postings_file.txt")
+		let num_docs = 0
+		let num_uniqe_words = 0
 
 		For each document d in the corpus_path
-			While (free memory available)
-				do 	title_list = tokenize(d.title, "title", d.id)
-						For each term t in the title_list
-						do 	token_list.add(t)
-						text_list = tokenize(d.text, "text", d.id)
-						For each term t in text_list
-						do  token_list.add(t)
-			block_list.add(Indexer(token_list, block#))
-		MergeBlocks(block_list, postings_file)
-		Remove all files in block_list from disk
-		end
+		do 	num_docs += 1
+				title_field_list = Tokenizer(d.title, "title", d.id)
+				For each term t in the title_field_list
+				do 	token_list.add(t)
+				text_field_list = Tokenizer(d.text, "text", d.id)
+				For each term t in text_field_list
+				do  token_list.add(t)
+		num_unique_words = FindUnique(token_list)
+		return (token_list, num_docs, num_unique_words)
 
-Indexer(token_list)
+Indexer
 	Description
-		This component takes a list of pairs and builds a term dictionary of (term, field) pairs, 
-		and an intermediate postings file of (docID, frequency) pairs for that list.
+		This component takes a list of "term:field docId:frequency" tokens, and the name for a postings file, 
+		and builds a dictionary of "term.field" keys that index (docID, frequency) postings, and writes 
+		this dictionary to the postings file "index.txt".
+		This component also times the entire process, returning the length of indexing.
 
 	Input
-		A list of (term, field, docId:frequency) pairs.
+		A list of "term.field docId.frequency" tokens related to a corpus.
 	Output
-		Output_file associated with intermediate block.
+		A dictionary of "term.field" keys that index (docID, frequency) postings.
+		Aka the completed inverted index that still resides in main memory.
+
+	Subcomponents
+	1. AddToDictionary(dictionary, key)
+				This should add a new "term.field" key to the dictionary, and return the empty 
+				postings list that this key refers to.
+	2. GetPostingsList(dictionary, key)
+				This should just return the list associated with this key in this dictionary.
+	3. WriteToDisk(dictionary, postings_file)
+				This just writes this dictionary to the postings file ("index.txt").
 
 	Psuedocode
-		let out_file = NewOutputFile(str(block#)+".txt")
-		let dictionary = {new hash}
+		let postings_file = NewOutputFile(postings_file_name)
+		let dictionary = {new empty dictionary}
+		let index_time = 0
+		let start_time = 0
+		let end_time = 0
+		
+		start_time = CurrentTimeStamp()
+		For each token t in token_list
+		do 	let postings_list = [new empty list]
+				if t not in dictionary
+				then  postings_list = AddToDictionary(dictionary, t)
+				else 	postings_list = GetPostingsList(dictionary, t)
+				AddToPostingsList(postings_list, pair(docID(t),frequency(t)))
+		WriteToDisk(dictionary, postings_file)
+		end_time = CurrentTimeStamp()
+		index_time = end_time - start_time
+		return (dictionary, index_time)
 
-		While (free memory available)
-		do 	For each token t in token token_list
-				do 	if pair(term(t), field(t)) not in dictionary
-						then	postings_list = AddToDictionary(dictionary, pair)
-						else 	postings_list = GetPostingsList(dictionary, pair)
-						if full(postings_list)
-						then	postings_list = DoublePostingsList(dictionary, pair)
-						AddToPostingsList(dictionary, pair(docID(t),frequency(t)))
-		sorted_dictionary = Sort(dictionary)
-		WriteBlockToDisk(sorted_dictionary, dictionary, out_file)
-		return out_file
+Reporter
+	This component reports on observations gathered during parsing and indexing.
+	The report is saved to disk as "Report.txt", and answers the following:
+	1. The number of documents in the corpus.
+	2. The number of unique words in the corpus.
+	3. The size of the index on disk.
+	4. The time taken by the indexer to create the index.
+
+	Input
+		1. The path to the corpus on disk.
+		2. The num_unique_words value returned by the Parser.
+		3. The index_time value returned by the Indexer.
+		4. The path to the index on disk.
+	Output
+		A text file that answers the specifed questions, saved to disk as "Report.txt".
+
+	Pseudocode
+		let output = NewOutputFile("Report.txt")
+
+		output.write("1. There are %d documents in the corpus\n", num_docs)
+		output.write("2. There are %d unique words in the corpus\n", num_unique_words)
+		output.write("3. The size of the index in KB on disk is %d\n", sizeInKBOf(path_to_index))
+		output.write("4. The time taken to create the index was %d\n", index_time)
+		end
 
 // Under Construction
 Scorer(query)
