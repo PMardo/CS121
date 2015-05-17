@@ -1,0 +1,1 @@
+defaultdict(<class 'list'>, {'hello.title': ['doc0.3', 'doc1.2'], 'world.text': ['doc1.54']})

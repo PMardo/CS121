@@ -61,8 +61,7 @@ Indexer
 	Input
 		A list of "term.field docId.frequency" tokens related to a corpus.
 	Output
-		A dictionary of "term.field" keys that index (docID, frequency) postings.
-		Aka the completed inverted index that still resides in main memory.
+		The length of time spent building the index.
 
 	Subcomponents
 	1. AddToDictionary(dictionary, key)
@@ -90,8 +89,8 @@ Indexer
 		WriteToDisk(dictionary, postings_file)
 		end_time = CurrentTimeStamp()
 		index_time = end_time - start_time
-		return (dictionary, index_time)
-
+		return index_time
+		
 Reporter
 	This component reports on observations gathered during parsing and indexing.
 	The report is saved to disk as "Report.txt", and answers the following:
