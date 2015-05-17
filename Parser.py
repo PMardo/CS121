@@ -1,3 +1,5 @@
+from collections import defaultdict
+import os
 import json
 import nltk
 ## Still Editing this (need to figure out json) - Patrice 
