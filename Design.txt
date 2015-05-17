@@ -90,7 +90,7 @@ Indexer
 		end_time = CurrentTimeStamp()
 		index_time = end_time - start_time
 		return index_time
-		
+
 Reporter
 	This component reports on observations gathered during parsing and indexing.
 	The report is saved to disk as "Report.txt", and answers the following:
@@ -100,10 +100,10 @@ Reporter
 	4. The time taken by the indexer to create the index.
 
 	Input
-		1. The path to the corpus on disk.
+		1. The num_docs value returned by the Parser.
 		2. The num_unique_words value returned by the Parser.
-		3. The index_time value returned by the Indexer.
-		4. The path to the index on disk.
+		3. The path to the index on disk.
+		4. The index_time value returned by the Indexer.
 	Output
 		A text file that answers the specifed questions, saved to disk as "Report.txt".
 
