@@ -10,9 +10,7 @@ class Indexer():
 		index = open(fileName, 'w')
 		self.t0 = time.clock()
 		for t in self.__tokenList:
-			print("t is " + str(t))
 			t = t.split()
-			print("t split is " + str(t))
 			self.__dict[t[0]].append(t[1])
 		index.write(str(self.__dict))
 		index.close()
