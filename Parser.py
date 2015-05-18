@@ -49,5 +49,4 @@ class parser():
                         finallist.append(tempstring)
                     print(finallist)                 
                 else: continue
-
         return num_docs,num_unique,finallist
