@@ -1,1 +1,1 @@
-defaultdict(<class 'list'>, {'hello.title': ['doc0.3', 'doc1.2'], 'world.text': ['doc1.54']})
+b"defaultdict(<class 'list'>, {'100.0.id': ['doc<html'], '1002.0.id': ['doc<!DOCTYPE'], '10.0.id': ['doc<HTML>'], '1000.0.id': ['doc<html>'], '10001.0.id': ['doc<html'], '1.0.id': ['doc<html>'], '1001.0.id': ['doc<!DOCTYPE'], '10000.0.id': ['doc<!DOCTYPE'], '1003.0.id': ['doc<html'], '0.0.id': ['doc<html>']})"

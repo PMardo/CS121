@@ -20,7 +20,8 @@ Parser
 	Input 
 		The path to a corpus.
 	Output
-		A list of "term.field docId.frequency" tokens.
+		A list of "term.field docId.frequency" tokens, the number of documents in the corpus, and the number of unique
+		words in the corpus.
 
 	Subcomponents
 	1. Tokenizer(text, field, docID)

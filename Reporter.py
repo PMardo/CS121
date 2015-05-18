@@ -1,19 +1,17 @@
 import os
 
 class Reporter():
-	def __init__(self, a, b, c, d):
+	def Report(self, a, b, c, d, e):
 		self.docs = a
 		self.unique = b
 		self.index = c
 		self.time = d
-
-	def Report(self):
-		report = open("Report.txt", "w")
-		report.write("1. There are %d documents in the corpus.\n",self.docs)
-		report.write("2. There are %d unique words in the corpus.\n",self.unique)
-		report.write("3. The size of the index on disk is %dKB\n",os.path.getsize(index)/1000)
-		report.write("4. The time taken to build the index was %d seconds\n",self.time)
-		report.close()
+		self.report = open(e, "w")
+		self.report.write("1. There are "+str(self.docs)+" documents in the corpus.\n")
+		self.report.write("2. There are "+str(self.unique)+" unique words in the corpus.\n")
+		self.report.write("3. The size of the index on disk is "+str(os.path.getsize(self.index)/1000)+"KB\n")
+		self.report.write("4. The time taken to build the index was "+str(self.time)+" seconds\n")
+		self.report.close()
 
 
 
