@@ -1,14 +1,15 @@
-#     Description
+#     Description (per Ronny's Design.txt)
 #         This component parses and tokenizes the corpus into a list of "term.field docId.frequency" tokens, 
 #         where stop words are discarded. Once the entire corpus has been tokenized, this list is returned 
 #         to the caller. The number of documents and the number of unique words found in the corpus are also 
 #         returned to the caller.
 
+# Tips: remember to download NLTK and JSON. 
 # What's in my driver.py:
-# import Parser 
-# corpusPath='/Applications/Eclipse /CS121Workspace/Assignment 3/FileDump' <-- add your path to the FileDump
-# p=Parser.parser()
-# p.startParse(corpusPath)
+#   import Parser 
+#   corpusPath='/Applications/Eclipse /CS121Workspace/Assignment 3/FileDump' <-- add your path to the FileDump
+#   p=Parser.parser()
+#   p.startParse(corpusPath)
 
 import os, json
 from nltk import word_tokenize
