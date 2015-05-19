@@ -1,4 +1,4 @@
-1. There are 1 documents in the corpus.
-2. There are 308 unique words in the corpus.
-3. The size of the index on disk is 8.223KB
-4. The time taken to build the index was 0.0007840000000001179 seconds
+1. There are 49464 documents in the corpus.
+2. There are 315513 unique words in the corpus.
+3. The size of the index on disk is 99715.052KB
+4. The time taken to build the index was 16305.488211 seconds
