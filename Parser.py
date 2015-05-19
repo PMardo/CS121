@@ -9,39 +9,55 @@ from nltk import word_tokenize
 from nltk.corpus import stopwords
 
 class Parser():
-    def __init__(self):
-        self.parsed_list=[] # didn't use this yet-- idk if i need it. 
-        
+
     def ParseCorpus(self, corpusPath):
         num_docs = len([d for d in os.listdir(corpusPath) if d.endswith('.txt')]) # Count all docs in corpus, exclude non txt files
         num_unique=0
         finallist=[]
-        tempstring=''
+        words_in_corpus = []
         for root, dirs, files in os.walk(corpusPath):
             for file in files:
                 if file.endswith(".txt"):
                     data = json.loads(open(os.path.join(root,file)).read())
-                    items = list(data.items())
-                    title = items[-1]
-                    docid = items[0]
-                    text = items[1]
+                    items = dict(data.items())
+                    text = items['text'] 
+                    title = items['title']
+                    docid = items['id']
+
+                    tokenized_text = word_tokenize(str(text)) #tokenize text str after converting from unicode  
+                    tokenized_title = word_tokenize(str(title))
+                    title_words = [w.lower() for w in tokenized_title if not w in stopwords.words('english')]
+                    text_words = [w.lower() for w in tokenized_text if not w in stopwords.words('english')]
                     
-                    tokenized_text = word_tokenize(str(text[1])) #tokenize text str after converting from unicode  
-                    words = [w.lower() for w in tokenized_text if not w in stopwords.words('english')] #  ***** REMOVE NUMBERS W REGEX *****
-                   
-                    num_unique += len(set(words)) # Num of unique words in entire corpus 
+                    for item in title_words:
+                        if item not in words_in_corpus:
+                            words_in_corpus.append(item)
+                    for item in text_words:
+                        if item not in words_in_corpus:
+                            words_in_corpus.append(item)
                     
-                    freq = {} # Get frequencies for each word in each doc
-                    for w in words:
-                        if w in freq:
-                            freq[w] = freq[w] + 1
+                    freq_text = {} # Get frequencies for each word in each doc
+                    freq_title = {}
+                    for w in title_words:
+                        if w in freq_title:
+                            freq_title[w] = freq_title[w] + 1
                         else:
-                            freq[w] = 1
+                            freq_title[w] = 1
+                    for w in text_words:
+                        if w in freq_text:
+                            freq_text[w] = freq_text[w] + 1
+                        else:
+                            freq_text[w] = 1
                     
-                    for k,v in freq.items(): # take the freq dict keys and values, add it to a temp string for formatting, then add that string to a permanent list
+                    for k,v in freq_text.items(): # take the freq dict keys and values, add it to a temp string for formatting, then add that string to a permanent list
                         # string should look like: term.field docID.frequency
-                        tempstring = k+'.'+str(text[0])+' doc'+str(docid[1])+'.'+str(v) ; # Note docid is actually a float, converted it to int. But we may want to keep it as a float... 
-                        finallist.append(tempstring)              
-                else: continue
-                a = (num_docs, num_unique, finallist)
+                        textstring = k+'.'+'text'+' doc'+str(int(docid))+'.'+str(v) # Note docid is actually a float, converted it to int. But we may want to keep it as a float...         
+                        finallist.append(textstring)  
+                    for k,v in freq_title.items(): # take the freq dict keys and values, add it to a temp string for formatting, then add that string to a permanent list
+                        # string should look like: term.field docID.frequency
+                        titlestring = k+'.'+'title'+' doc'+str(int(docid))+'.'+str(v) # Note docid is actually a float, converted it to int. But we may want to keep it as a float...         
+                        finallist.append(titlestring)
+
+        num_unique = len(words_in_corpus) # Num of unique words in entire corpus 
+        a = (num_docs, num_unique, finallist)
         return a
