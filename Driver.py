@@ -13,6 +13,6 @@ Reporter = Reporter()
 
 t0 = time.clock()
 metatuple = Parser.ParseCorpus(corpuspath)
-Indexer.BuildIndex(metatuple[2], indexfile)
+Indexer.BuildIndex(metatuple[2], indexfile, metatuple[0], metatuple[4])
 t1 = time.clock()
 Reporter.Report(metatuple[0], metatuple[1], indexfile, t1-t0, reportfile)
