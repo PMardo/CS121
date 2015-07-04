@@ -11,4 +11,4 @@ Description:
 
 	Indexer.py builds a TF-IDF postings file, Store/index.txt, and collects some statistics, Store/Report.txt
 
-	Query.py is the main module, and uses cosine similarity scoring to retrieve the 5 most relevant documents in the corpus with respect to a user defined query
+	Query.py is the main module, and uses cosine similarity scoring to retrieve the 5 most relevant documents in the corpus, with respect to a user defined query
